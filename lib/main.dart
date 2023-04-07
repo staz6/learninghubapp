@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:learninghubapp/auth_provider.dart';
 import 'firebase_options.dart';
 import 'login_page.dart';
+import 'layout_page.dart';
 import 'news_feed_page.dart';
 import 'package:provider/provider.dart';
 
@@ -52,7 +53,9 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
-        home: AuthHandler(),
+        home: Consumer<AuthProvider>(
+          builder: (context, authProvider, _) => AuthHandler(),
+        ),
       ),
     );
   }
@@ -66,7 +69,7 @@ class AuthHandler extends StatelessWidget {
     return authProvider.loggedIn == null
         ? CircularProgressIndicator()
         : authProvider.loggedIn!
-            ? NewsFeedPage()
+            ? LayoutPage(body: NewsFeedPage(),currentPage: 'News Feed')
             : LoginPage();
   }
 }
