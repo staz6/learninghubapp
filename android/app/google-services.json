@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "626181265807",
+    "project_id": "learning-hub-e41f5",
+    "storage_bucket": "learning-hub-e41f5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:626181265807:android:f24c27c681dc42085f93fa",
+        "android_client_info": {
+          "package_name": "com.example.learninghub"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "626181265807-bj7oovvppf0bc4eh2cv1rovd00m3j7ud.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCm-n_fXE8Y5u4CFNo0YwdOgYzmAcy8tAo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "626181265807-bj7oovvppf0bc4eh2cv1rovd00m3j7ud.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "626181265807-159eemq60os07b04vbm2van0gbrs3ctn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.learninghubapp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:626181265807:android:4333fc42ab15a0855f93fa",
+        "android_client_info": {
+          "package_name": "com.example.learninghubapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "626181265807-bj7oovvppf0bc4eh2cv1rovd00m3j7ud.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCm-n_fXE8Y5u4CFNo0YwdOgYzmAcy8tAo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "626181265807-bj7oovvppf0bc4eh2cv1rovd00m3j7ud.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "626181265807-159eemq60os07b04vbm2van0gbrs3ctn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.learninghubapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
