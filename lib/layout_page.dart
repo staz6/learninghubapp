@@ -3,6 +3,7 @@ import 'news_feed_page.dart';
 import 'new_post_page.dart';
 import 'chat_page.dart';
 import 'profile_page.dart';
+import 'creators_page.dart';
 import 'package:provider/provider.dart';
 import 'auth_provider.dart';
 
@@ -83,6 +84,13 @@ void _signOut(BuildContext context) async {
               title: Text('Chat',style: TextStyle(color: Colors.white)),
               onTap: () {
                 _navigateToPage(ChatPage(), 'Chat');
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.chat,color: Color(0xFF1b1b1b)),
+              title: Text('Creator',style: TextStyle(color: Colors.white)),
+              onTap: () {
+                _navigateToPage(CreatorsPage(), 'Creator');
               },
             ),
             ListTile(

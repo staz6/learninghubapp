@@ -28,6 +28,7 @@ class _SignUpPageState extends State<SignUpPage> {
         'username': _usernameController.text.trim(),
         'fullname': _fullnameController.text.trim(),
         'email': _emailController.text.trim(),
+        'subscribes': [],
       });
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
