@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learninghubapp/repository/new_post/new_post_bloc.dart';
 import 'package:learninghubapp/repository/news_feed/news_feed_bloc.dart';
 import 'package:learninghubapp/repository/profile/profile_bloc.dart';
+import 'package:learninghubapp/screens/login_page.dart';
 import '../screens/news_feed_page.dart';
 import '../screens/new_post_page.dart';
 import '../screens/chat_page.dart';
@@ -65,18 +66,13 @@ class _LayoutPageState extends State<LayoutPage> {
     );
   }
 
-  void _signOut(BuildContext context) async {
-    try {
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      await authProvider.signOut();
-    } catch (e) {
-      print(e);
-    }
-  }
 
   void _signOutBlock(BuildContext context) {
     context.read<AuthBloc>().add(SignedOut());
-    
+    Navigator.of(context).pushAndRemoveUntil(
+    MaterialPageRoute(builder: (context) => LoginPage()),
+    (route) => false,
+  );
   }
 
   TextStyle _listTileTextStyle(String pageName) {
