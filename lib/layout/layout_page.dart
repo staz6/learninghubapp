@@ -1,9 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../screens/news_feed_page.dart';
 import '../screens/new_post_page.dart';
 import '../screens/chat_page.dart';
 import '../screens/profile_page.dart';
 import '../screens/creators_page.dart';
+import '../repository/chat/chat_bloc.dart';
 import 'package:provider/provider.dart';
 import '../helper/auth_provider.dart';
 import '../repository/auth/auth_bloc.dart';
@@ -18,12 +21,26 @@ class LayoutPage extends StatefulWidget {
 }
 
 class _LayoutPageState extends State<LayoutPage> {
+  final currentUserUid = FirebaseAuth.instance.currentUser!.uid;
+  
+
   void _navigateToPage(Widget page, String pageName) {
+    Widget body;
+    if (pageName == 'Chat') {
+      body = BlocProvider<ChatBloc>(
+        create: (context) =>
+            ChatBloc(currentUserUid), 
+        child: ChatPage(),
+      );
+    } else {
+      body = page;
+    }
+
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => LayoutPage(
-          body: page,
+          body: body,
           currentPage: pageName,
         ),
       ),
