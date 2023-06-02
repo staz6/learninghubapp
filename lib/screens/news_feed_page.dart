@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:learninghubapp/screens/post_card.dart';
+import 'package:learninghubapp/component/post_card.dart';
 import '../repository/news_feed/news_feed_bloc.dart';
 import '../repository/news_feed/news_feed_event.dart';
 import '../repository/news_feed/news_feed_state.dart';
