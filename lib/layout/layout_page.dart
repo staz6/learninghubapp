@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:learninghubapp/repository/news_feed/news_feed_bloc.dart';
 import 'package:learninghubapp/repository/profile/profile_bloc.dart';
 import '../screens/news_feed_page.dart';
 import '../screens/new_post_page.dart';
@@ -23,25 +24,26 @@ class LayoutPage extends StatefulWidget {
 
 class _LayoutPageState extends State<LayoutPage> {
   final currentUserUid = FirebaseAuth.instance.currentUser!.uid;
-  
 
   void _navigateToPage(Widget page, String pageName) {
     Widget body;
     if (pageName == 'Chat') {
       body = BlocProvider<ChatBloc>(
-        create: (context) =>
-            ChatBloc(currentUserUid), 
+        create: (context) => ChatBloc(currentUserUid),
         child: ChatPage(),
       );
-    }
-    else if(pageName == "Profile"){
+    } else if (pageName == "Profile") {
       body = BlocProvider<ProfileBloc>(
-        create: (context) =>
-            ProfileBloc(), 
+        create: (context) => ProfileBloc(),
         child: ProfilePage(),
       );
-    } 
-    else {
+    } else if (pageName == 'News Feed') {
+      body = BlocProvider<NewsFeedBloc>(
+        create: (context) => NewsFeedBloc(),
+        child: NewsFeedPage(),
+      );
+    } else {
+      print("we in in else pageName");
       body = page;
     }
 
