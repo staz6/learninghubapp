@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../repository/auth/auth_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'login_page.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -41,15 +43,31 @@ class _SignUpPageState extends State<SignUpPage> {
     }
   }
 
+  void _signUpBloc() {
+    context.read<AuthBloc>().add(
+          SignUpRequested(
+            username: _usernameController.text.trim(),
+            fullname: _fullnameController.text.trim(),
+            email: _emailController.text.trim(),
+            password: _passwordController.text.trim(),
+            onFailure: (message) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Error: $message')),
+              );
+            },
+          ),
+        );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Sign Up')),
       body: Center(
         child: Container(
-          width: MediaQuery.of(context).size.width * 0.6, // 60% of the width
+          width: MediaQuery.of(context).size.width * 0.6, 
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center, // Center vertically
+            mainAxisAlignment: MainAxisAlignment.center, 
             children: [
               TextField(
                 controller: _usernameController,
@@ -73,7 +91,7 @@ class _SignUpPageState extends State<SignUpPage> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 ElevatedButton(
-                  onPressed: _signUp,
+                  onPressed: _signUpBloc,
                   child: Text('Sign Up'),
                 ),
                 ElevatedButton(

@@ -20,3 +20,12 @@ class LogInRequested extends AuthEvent {
   @override
   List<Object> get props => [email, password];
 }
+class SignUpRequested extends AuthEvent {
+  final String username;
+  final String fullname;
+  final String email;
+  final String password;
+  final Function(String message) onFailure;
+
+  const SignUpRequested({required this.username, required this.fullname, required this.email, required this.password, required this.onFailure});
+}

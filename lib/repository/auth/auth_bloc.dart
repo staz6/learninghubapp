@@ -8,16 +8,19 @@ part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   AuthBloc() : super(AuthInitial()) {
     on<AuthCheckRequested>(_authCheckRequested);
     on<SignedOut>(_signedOut);
     on<LogInRequested>(_logInRequested);
+    on<SignUpRequested>(_signUpRequested);
 
     add(AuthCheckRequested());
   }
 
-  Future<void> _authCheckRequested(AuthCheckRequested event, Emitter<AuthState> emit) async {
+  Future<void> _authCheckRequested(
+      AuthCheckRequested event, Emitter<AuthState> emit) async {
     final user = _auth.currentUser;
     if (user == null) {
       emit(Unauthenticated());
@@ -36,7 +39,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(Unauthenticated());
   }
 
-   Future<void> _logInRequested(LogInRequested event, Emitter<AuthState> emit) async {
+  Future<void> _logInRequested(
+      LogInRequested event, Emitter<AuthState> emit) async {
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: event.email,
@@ -54,7 +58,40 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(Unauthenticated());
       }
     } catch (e) {
-      print(e);
+      emit(AuthFailure(e.toString()));
+      emit(Unauthenticated());
+    }
+  }
+
+  Future<void> _signUpRequested(
+      SignUpRequested event, Emitter<AuthState> emit) async {
+    try {
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
+        email: event.email,
+        password: event.password,
+      );
+      User? user = userCredential.user;
+      if (user != null) {
+        await _firestore.collection('users').doc(user.uid).set({
+          'username': event.username,
+          'fullname': event.fullname,
+          'email': event.email,
+          'subscribes': [],
+        });
+        final creatorDoc =
+            await _firestore.collection('creators').doc(user.uid).get();
+        final isCreator = creatorDoc.exists;
+        emit(Authenticated(user, isCreator));
+      } else {
+        emit(Unauthenticated());
+      }
+    } catch (e) {
+      if (e is FirebaseAuthException) {
+        event.onFailure(e.message ?? "Sorry something went wrong please try again later.");
+      } else {
+        event.onFailure(e.toString());
+      }
     }
   }
 }
