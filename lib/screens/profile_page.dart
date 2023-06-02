@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:learninghubapp/repository/profile/profile_bloc.dart';
+import 'package:learninghubapp/repository/profile/profile_event.dart';
+import 'package:learninghubapp/repository/profile/profile_state.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -20,62 +24,62 @@ Future<DocumentSnapshot> _getCreatorDocument() async {
 
 Widget _buildProfileUI(
     BuildContext context, bool isCreator, Map<String, dynamic> creatorData) {
-  // Update the button text based on isCreator
   String buttonText = isCreator ? 'Creator' : 'Apply as Creator';
 
-  return Column(
-    mainAxisAlignment: MainAxisAlignment.start,
-    children: [
-      SizedBox(height: 20),
-      CircleAvatar(
-        radius: 50,
-        child: Icon(Icons.person, size: 50),
-      ),
-      SizedBox(height: 20),
-      ElevatedButton(
-        child: Text(buttonText),
-        onPressed: () {
-          _showApplyAsCreatorForm(
-            context,
-            isCreator,
-            TextEditingController(text: creatorData['fullName'] ?? ''),
-            TextEditingController(text: creatorData['speciality'] ?? ''),
-            TextEditingController(text: creatorData['aboutMe'] ?? ''),
-            TextEditingController(text: creatorData['country'] ?? ''),
-            TextEditingController(text: creatorData['city'] ?? ''),
-            TextEditingController(text: creatorData['dateOfBirth'] ?? ''),
-          );
-        },
-      ),
-    ],
+  return Center(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        SizedBox(height: 20),
+        CircleAvatar(
+          radius: 50,
+          child: Icon(Icons.person, size: 50),
+        ),
+        SizedBox(height: 20),
+        ElevatedButton(
+          child: Text(buttonText),
+          onPressed: () {
+            _showApplyAsCreatorForm(
+              context,
+              isCreator,
+              TextEditingController(text: creatorData['fullName'] ?? ''),
+              TextEditingController(text: creatorData['speciality'] ?? ''),
+              TextEditingController(text: creatorData['aboutMe'] ?? ''),
+              TextEditingController(text: creatorData['country'] ?? ''),
+              TextEditingController(text: creatorData['city'] ?? ''),
+              TextEditingController(text: creatorData['dateOfBirth'] ?? ''),
+            );
+          },
+        ),
+      ],
+    ),
   );
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  late ProfileBloc _bloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _bloc = context.read<ProfileBloc>();
+    _bloc.add(LoadProfile());
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: FutureBuilder<DocumentSnapshot>(
-          future: _getCreatorDocument(),
-          builder:
-              (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator();
-            }
-
-            bool isCreator = false;
-            Map<String, dynamic> creatorData = {};
-
-            if (snapshot.hasData && snapshot.data!.exists) {
-              isCreator = true;
-              creatorData = snapshot.data!.data() as Map<String, dynamic>;
-            }
-
-            return _buildProfileUI(context, isCreator, creatorData);
-          },
-        ),
-      ),
+    return BlocBuilder<ProfileBloc, ProfileState>(
+      builder: (context, state) {
+        if (state is ProfileLoading) {
+          return Center(child: CircularProgressIndicator());
+        } else if (state is ProfileLoaded) {
+          return _buildProfileUI(context, state.isCreator, state.creatorData);
+        } else if (state is ProfileError) {
+          return Center(child: Text('Error: ${state.error}'));
+        }
+        return SizedBox.shrink();
+      },
     );
   }
 }
@@ -91,41 +95,20 @@ void _showApplyAsCreatorForm(
   TextEditingController dateOfBirthController,
 ) {
   Future<void> _submitForm() async {
-    User? currentUser = FirebaseAuth.instance.currentUser;
-    if (currentUser != null) {
-      try {
-        print("here");
-        await FirebaseFirestore.instance
-            .collection('creators')
-            .doc(currentUser.uid)
-            .set({
-          'fullName': fullNameController.text,
-          'speciality': specialityController.text,
-          'aboutMe': aboutMeController.text,
-          'country': countryController.text,
-          'city': cityController.text,
-          'dateOfBirth': dateOfBirthController.text,
-        });
-        if (isCreator) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Successfully updated information')),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Successfully applied as creator')),
-          );
-        }
-        Navigator.of(context).pop(); // Close the form
-      } catch (e) {
-        // Handle the error
-        print(e);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Sorry something went wrong')),
-        );
-      }
+    Map<String, dynamic> creatorData = {
+      'fullName': fullNameController.text,
+      'speciality': specialityController.text,
+      'aboutMe': aboutMeController.text,
+      'country': countryController.text,
+      'city': cityController.text,
+      'dateOfBirth': dateOfBirthController.text,
+    };
+    if (isCreator) {
+      context.read<ProfileBloc>().add(UpdateProfile(creatorData));
     } else {
-      print('User is not signed in');
+      context.read<ProfileBloc>().add(ApplyAsCreator(creatorData));
     }
+    Navigator.of(context).pop(); 
   }
 
   showDialog(

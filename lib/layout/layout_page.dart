@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:learninghubapp/repository/profile/profile_bloc.dart';
 import '../screens/news_feed_page.dart';
 import '../screens/new_post_page.dart';
 import '../screens/chat_page.dart';
@@ -32,7 +33,15 @@ class _LayoutPageState extends State<LayoutPage> {
             ChatBloc(currentUserUid), 
         child: ChatPage(),
       );
-    } else {
+    }
+    else if(pageName == "Profile"){
+      body = BlocProvider<ProfileBloc>(
+        create: (context) =>
+            ProfileBloc(), 
+        child: ProfilePage(),
+      );
+    } 
+    else {
       body = page;
     }
 
