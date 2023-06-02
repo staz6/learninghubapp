@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../repository/new_post/new_post_bloc.dart';
+import '../repository/new_post/new_post_event.dart';
+import '../repository/new_post/new_post_state.dart';
 import '../repository/auth/auth_bloc.dart';
 import 'package:provider/provider.dart';
 import '../helper/auth_provider.dart';
@@ -16,75 +19,76 @@ class _NewPostPageState extends State<NewPostPage> {
   final _descriptionController = TextEditingController();
   bool _isPrivate = false;
 
-  void _submitPost(User user) async {
-    FirebaseFirestore.instance.collection('posts').add({
-      'title': _titleController.text,
-      'description': _descriptionController.text,
-      'likes': [],
-      'isPrivate': _isPrivate,
-      'creatorId': user.uid,
-      'timestamp': FieldValue.serverTimestamp(),
-    }).then((_) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Post created successfully')),
-      );
-    }).catchError((error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to create post: $error')),
-      );
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocBuilder<AuthBloc, AuthState>(
-        builder: (context, state) {
-          if (state is Authenticated) {
-            return SingleChildScrollView(
-              padding: EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TextField(
-                    controller: _titleController,
-                    decoration: InputDecoration(
-                      labelText: 'Title',
-                      hintText: 'Enter the title of your post',
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                  TextField(
-                    controller: _descriptionController,
-                    decoration: InputDecoration(
-                      labelText: 'Description',
-                      hintText: 'Enter the description of your post',
-                    ),
-                    maxLines: 5,
-                  ),
-                  SizedBox(height: 16),
-                  if (state.isCreator)
-                    Row(
-                      children: [
-                        Text('Private post'),
-                        SizedBox(width: 8),
-                        Switch(
-                          value: _isPrivate,
-                          onChanged: (value) {
-                            setState(() {
-                              _isPrivate = value;
-                            });
-                          },
+        builder: (context, authState) {
+          if (authState is Authenticated) {
+            return BlocConsumer<NewPostBloc, NewPostState>(
+              listener: (context, newPostState) {
+                if (newPostState is NewPostSuccess) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Post created successfully')),
+                  );
+                  _titleController.clear();
+                  _descriptionController.clear();
+                } 
+              },
+              builder: (context, newPostState) {
+                return SingleChildScrollView(
+                  padding: EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TextField(
+                        controller: _titleController,
+                        decoration: InputDecoration(
+                          labelText: 'Title',
+                          hintText: 'Enter the title of your post',
                         ),
-                      ],
-                    ),
-                  SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () => _submitPost(state.user),
-                    child: Text('Create Post'),
+                      ),
+                      SizedBox(height: 16),
+                      TextField(
+                        controller: _descriptionController,
+                        decoration: InputDecoration(
+                          labelText: 'Description',
+                          hintText: 'Enter the description of your post',
+                        ),
+                        maxLines: 5,
+                      ),
+                      SizedBox(height: 16),
+                      if (authState.isCreator)
+                        Row(
+                          children: [
+                            Text('Private post'),
+                            SizedBox(width: 8),
+                            Switch(
+                              value: _isPrivate,
+                              onChanged: (value) {
+                                setState(() {
+                                  _isPrivate = value;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                      SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () => context.read<NewPostBloc>().add(
+                          SubmitPost(
+                            title: _titleController.text,
+                            description: _descriptionController.text,
+                            isPrivate: _isPrivate,
+                            uid: authState.user.uid,
+                          ),
+                        ),
+                        child: Text('Create Post'),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                );
+              },
             );
           } else {
             return Center(child: CircularProgressIndicator());

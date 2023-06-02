@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:learninghubapp/repository/new_post/new_post_bloc.dart';
 import 'package:learninghubapp/repository/news_feed/news_feed_bloc.dart';
 import 'package:learninghubapp/repository/profile/profile_bloc.dart';
 import '../screens/news_feed_page.dart';
@@ -42,7 +43,13 @@ class _LayoutPageState extends State<LayoutPage> {
         create: (context) => NewsFeedBloc(),
         child: NewsFeedPage(),
       );
-    } else {
+    } else if (pageName == "New Post"){
+      body = BlocProvider<NewPostBloc>(
+        create: (context) => NewPostBloc(),
+        child: NewPostPage(),
+      );
+    } 
+    else {
       print("we in in else pageName");
       body = page;
     }
@@ -69,6 +76,7 @@ class _LayoutPageState extends State<LayoutPage> {
 
   void _signOutBlock(BuildContext context) {
     context.read<AuthBloc>().add(SignedOut());
+    
   }
 
   TextStyle _listTileTextStyle(String pageName) {
