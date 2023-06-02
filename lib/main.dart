@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:learninghubapp/auth_provider.dart';
-import 'firebase_options.dart';
-import 'login_page.dart';
-import 'layout_page.dart';
-import 'news_feed_page.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'repository/auth/auth_bloc.dart';
+import 'helper/firebase_options.dart';
+import 'screens/login_page.dart';
+import 'layout/layout_page.dart';
+import 'screens/news_feed_page.dart';
 
 void main() async {
   await Firebase.initializeApp(
@@ -15,13 +15,12 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => AuthProvider(),
+    return BlocProvider(
+      create: (context) => AuthBloc(),
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
@@ -53,8 +52,8 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
-        home: Consumer<AuthProvider>(
-          builder: (context, authProvider, _) => AuthHandler(),
+        home: BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, state) => AuthHandler(state: state),
         ),
       ),
     );
@@ -62,14 +61,18 @@ class MyApp extends StatelessWidget {
 }
 
 class AuthHandler extends StatelessWidget {
+  final AuthState state;
+
+  AuthHandler({required this.state});
+
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
-
-    return authProvider.loggedIn == null
-        ? CircularProgressIndicator()
-        : authProvider.loggedIn!
-            ? LayoutPage(body: NewsFeedPage(),currentPage: 'News Feed')
-            : LoginPage();
+    if (state is Authenticated) {
+      return LayoutPage(body: NewsFeedPage(), currentPage: 'News Feed');
+    } else if (state is Unauthenticated) {
+      return LoginPage();
+    } else {
+      return CircularProgressIndicator();
+    }
   }
 }

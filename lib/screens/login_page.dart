@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../repository/auth/auth_bloc.dart';
+import 'package:provider/provider.dart';
 import 'signup_page.dart';
-
 
 class LoginPage extends StatefulWidget {
   @override
@@ -28,6 +29,15 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  void _loginBlock() {
+    context.read<AuthBloc>().add(
+          LogInRequested(
+            _emailController.text.trim(),
+            _passwordController.text.trim(),
+          ),
+        );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,24 +58,24 @@ class _LoginPageState extends State<LoginPage> {
                 obscureText: true,
               ),
               SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ElevatedButton(
-                  onPressed: _login,
-                  child: Text('Login'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => SignUpPage()),
-                    );
-                  },
-                  child: Text("Sign up"),
-                ),
-              ],
-            ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  ElevatedButton(
+                    onPressed: _loginBlock,
+                    child: Text('Login'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SignUpPage()),
+                      );
+                    },
+                    child: Text("Sign up"),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
