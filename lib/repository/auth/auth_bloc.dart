@@ -7,10 +7,13 @@ part 'auth_event.dart';
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth;
+  final FirebaseFirestore _firestore;
 
-  AuthBloc() : super(AuthInitial()) {
+   AuthBloc({FirebaseAuth? auth, FirebaseFirestore? firestore})
+      : _auth = auth ?? FirebaseAuth.instance,
+        _firestore = firestore ?? FirebaseFirestore.instance,
+        super(AuthInitial()) {
     on<AuthCheckRequested>(_authCheckRequested);
     on<SignedOut>(_signedOut);
     on<LogInRequested>(_logInRequested);
@@ -28,7 +31,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final creatorDoc = await FirebaseFirestore.instance
           .collection('creators')
           .doc(user.uid)
-          .get();
+          .get(); 
       final isCreator = creatorDoc.exists;
       emit(Authenticated(user, isCreator));
     }
