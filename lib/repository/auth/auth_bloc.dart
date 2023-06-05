@@ -10,7 +10,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final FirebaseAuth _auth;
   final FirebaseFirestore _firestore;
 
-   AuthBloc({FirebaseAuth? auth, FirebaseFirestore? firestore})
+  AuthBloc({FirebaseAuth? auth, FirebaseFirestore? firestore})
       : _auth = auth ?? FirebaseAuth.instance,
         _firestore = firestore ?? FirebaseFirestore.instance,
         super(AuthInitial()) {
@@ -31,7 +31,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final creatorDoc = await FirebaseFirestore.instance
           .collection('creators')
           .doc(user.uid)
-          .get(); 
+          .get();
       final isCreator = creatorDoc.exists;
       emit(Authenticated(user, isCreator));
     }
@@ -61,6 +61,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(Unauthenticated());
       }
     } catch (e) {
+      print(e);
       emit(AuthFailure(e.toString()));
       emit(Unauthenticated());
     }
@@ -91,7 +92,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     } catch (e) {
       if (e is FirebaseAuthException) {
-        event.onFailure(e.message ?? "Sorry something went wrong please try again later.");
+        event.onFailure(
+            e.message ?? "Sorry something went wrong please try again later.");
       } else {
         event.onFailure(e.toString());
       }

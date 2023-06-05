@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider( // Use MultiBlocProvider when providing multiple blocs
+    return MultiBlocProvider( 
       providers: [
         BlocProvider(
           create: (context) => AuthBloc(),
@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
               ),
           inputDecorationTheme: InputDecorationTheme(
             labelStyle:
-                TextStyle(color: Color(0xFFAAAAAA)), // Lighter shade of white
+                TextStyle(color: Color(0xFFAAAAAA)), 
             hintStyle: TextStyle(color: Color(0xFFAAAAAA)),
             enabledBorder: UnderlineInputBorder(
               borderSide: BorderSide(color: Color(0xFFF0B032)),

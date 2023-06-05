@@ -19,19 +19,28 @@ class _SignUpPageState extends State<SignUpPage> {
 
 
   void _signUpBloc() {
-    context.read<AuthBloc>().add(
-          SignUpRequested(
-            username: _usernameController.text.trim(),
-            fullname: _fullnameController.text.trim(),
-            email: _emailController.text.trim(),
-            password: _passwordController.text.trim(),
-            onFailure: (message) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error: $message')),
-              );
-            },
-          ),
-        );
+    if (_usernameController.text.trim().isEmpty ||
+        _fullnameController.text.trim().isEmpty ||
+        _emailController.text.trim().isEmpty ||
+        _passwordController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('All fields are required')),
+      );
+    } else {
+      context.read<AuthBloc>().add(
+        SignUpRequested(
+          username: _usernameController.text.trim(),
+          fullname: _fullnameController.text.trim(),
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+          onFailure: (message) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Error: $message')),
+            );
+          },
+        ),
+      );
+    }
   }
 
   @override
@@ -44,6 +53,38 @@ class _SignUpPageState extends State<SignUpPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center, 
             children: [
+              Image.asset('logo-dark.png'),  
+                SizedBox(height: 10),
+                
+                RichText(
+                  text: TextSpan(
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black,
+                    ),
+                    children: <TextSpan>[
+                      TextSpan(text: 'Knowledge. Humility. ',style: TextStyle(
+                          color: Color(0xFFFFFFFF),
+                        ),),
+                      TextSpan(
+                        text: 'Character',
+                        style: TextStyle(
+                          color: Color(0xFFF0B032),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  'Registry Yourself',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFFAAAAAA)
+                  ),
+                ),
+                SizedBox(height: 10),
               TextField(
                 controller: _usernameController,
                 decoration: InputDecoration(labelText: 'Username'),

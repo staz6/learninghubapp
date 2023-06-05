@@ -25,64 +25,9 @@ class _NewsFeedPageState extends State<NewsFeedPage> {
 
   final currentUserUid = FirebaseAuth.instance.currentUser!.uid;
 
-  void _handleLikeUnlike(String postId, bool isLiked) {
-    context.read<NewsFeedBloc>().add(LikeUnlikePost(postId, isLiked));
-  }
+  
 
-  Widget _buildPostCard(BuildContext context, DocumentSnapshot post) {
-    return FutureBuilder<DocumentSnapshot>(
-      future: FirebaseFirestore.instance
-          .collection('users')
-          .doc(post['creatorId'])
-          .get(),
-      builder:
-          (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-        if (!snapshot.hasData) {
-          return Center(child: CircularProgressIndicator());
-        }
 
-        if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        }
-
-        final creator = snapshot.data!;
-        bool isLiked = post['likes'].contains(currentUserUid);
-
-        return Card(
-          color: Color(0xFF2d2d2d),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  creator['fullname'],
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 4),
-                Text(post['title']),
-                SizedBox(height: 4),
-                Text(post['description']),
-                SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    IconButton(
-                      onPressed: () => _handleLikeUnlike(post.id, isLiked),
-                      icon: Icon(
-                        Icons.favorite,
-                        color: isLiked ? Colors.red : Colors.grey,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
 
   @override
   @override
